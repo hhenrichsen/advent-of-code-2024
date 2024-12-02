@@ -17,6 +17,8 @@ with open(f"./res/day{day}a.txt", "w") as f:
 with open(f"./python/day{day}.py", "w") as f:
     f.write(
         f"""
+from collections import Counter
+
 from util import (
     AfterRegion,
     Grid,
@@ -50,17 +52,17 @@ grid = False
 
             
 def part1(inp):
-    sum = 0
+    result = 0
     for line in inp:
         ...
-    return sum
+    return result
 
 
 def part2(inp):
-    sum = 0
+    result = 0
     for line in inp:
         ...
-    return sum
+    return result
 
 if not grid:
     test_inp = None
