@@ -2,11 +2,14 @@ import sys
 
 _, day = sys.argv
 
-if open(f"./res/day{day}.txt", "r").read() != "" \
-    or open(f"./res/day{day}a.txt", "r").read() != "" \
-    or open(f"./python/day{day}.py", "r").read() != "":
-    print(f"Day {day} already exists")
-    exit(1)
+try:
+    if open(f"./res/day{day}.txt", "r").read() != "" \
+        or open(f"./res/day{day}a.txt", "r").read() != "" \
+        or open(f"./python/day{day}.py", "r").read() != "":
+        print(f"Day {day} already exists")
+        exit(1)
+except FileNotFoundError:
+    pass
 
 with open(f"./res/day{day}.txt", "w") as f:
     f.write("")
