@@ -12,8 +12,8 @@ Coord = Tuple[int, int]
 
 
 def _curry_filter(filter):
-    return (
-        lambda x: all([f(x) for f in filter]) if isinstance(filter, list) else filter(x)
+    return lambda x: (
+        all([f(x) for f in filter]) if isinstance(filter, list) else filter(x)
     )
 
 
@@ -297,6 +297,13 @@ class Grid(Generic[A]):
         """
         Index into the grid using a tuple (x, y).
         """
+        if (
+            key[1] < 0
+            or key[1] >= len(self.__data)
+            or key[0] < 0
+            or key[0] >= len(self.__data[0])
+        ):
+            return None
         return self.__data[key[1]][key[0]]
 
     def __len__(self) -> int:
@@ -314,6 +321,11 @@ class Grid(Generic[A]):
         Assumes that the grid is not jagged.
         """
         return (len(self.__data[0]), len(self.__data))
+
+    def to_string(self, item_to_str: Callable[[GridItem[A]], str] = str) -> str:
+        return "\n".join(
+            ["".join([item_to_str(item) for item in row]) for row in self.__data]
+        )
 
 
 def compare_x(a: Grid.GridItem[A], b: Grid.GridItem[B]) -> int:
