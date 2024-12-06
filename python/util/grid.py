@@ -213,6 +213,41 @@ class Grid(Generic[A]):
                     count += 1
             return count
 
+        def position(self) -> Tuple[int, int]:
+            return (self.x, self.y)
+
+        def north(self) -> "Grid.GridItem[A]":
+            return self.parent[self.x, self.y - 1]
+
+        def south(self) -> "Grid.GridItem[A]":
+            return self.parent[self.x, self.y + 1]
+
+        def east(self) -> "Grid.GridItem[A]":
+            return self.parent[self.x + 1, self.y]
+
+        def west(self) -> "Grid.GridItem[A]":
+            return self.parent[self.x - 1, self.y]
+
+        def relative(self, x: int, y: int) -> "Grid.GridItem[A]":
+            return self.parent[self.x + x, self.y + y]
+
+        def raycast(
+            self, direction: Tuple[int, int], hit: Callable[["Grid.GridItem[A]"], bool]
+        ) -> "Grid.GridItem[A]":
+            x, y = self.x + direction[0], self.y + direction[1]
+            while (item := self.parent[x, y]) is not None:
+                if hit(item):
+                    return item
+                x += direction[0]
+                y += direction[1]
+            return None
+
+        def __add__(self, other: Tuple[int, int]) -> "Grid.GridItem[A]":
+            return self.parent[self.x + other[0], self.y + other[1]]
+
+        def __sub__(self, other: Tuple[int, int]) -> "Grid.GridItem[A]":
+            return self.parent[self.x - other[0], self.y - other[1]]
+
         def __call__(self) -> A:
             return self.data
 
@@ -283,7 +318,7 @@ class Grid(Generic[A]):
         while len(to_visit) > 0:
             check = to_visit.pop(0)
             visited.add(check)
-            item = self[*check]
+            item = self[check]
             if is_valid(item):
                 count += 1
                 valid.add(check)
@@ -292,6 +327,9 @@ class Grid(Generic[A]):
                 to_visit.extend(n)
                 visited.update(n)
         return count, valid
+
+    def clone(self) -> "Grid[A]":
+        return Grid([[item.data for item in row] for row in self.__data])
 
     def __getitem__(self, key: Coord) -> GridItem[A]:
         """
