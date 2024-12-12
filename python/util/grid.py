@@ -51,11 +51,50 @@ class Grid(Generic[A]):
                 y if y is not None else self.y,
             )
 
+        def neighbor_positions(
+            self,
+            horizontal: bool = True,
+            vertical: bool = True,
+            diagonal: bool = False,
+            bounds: bool = True,
+        ) -> List[Tuple[int, int]]:
+            """
+            Get a list of valid neighbor coordinates
+            """
+            res = []
+            sx, sy = self.parent.size()
+
+            if vertical:
+                if not bounds or self.y - 1 >= 0:
+                    res.append((self.x, self.y - 1))
+
+            if horizontal:
+                if not bounds or self.y < sy and self.x - 1 >= 0:
+                    res.append((self.x - 1, self.y))
+                if not bounds or self.y < sy and self.x + 1 < sx:
+                    res.append((self.x + 1, self.y))
+
+            if vertical:
+                if not bounds or self.y + 1 < sy and self.x < sx:
+                    res.append((self.x, self.y + 1))
+
+            if diagonal:
+                if not bounds or self.y + 1 < sy and self.x + 1 < sx:
+                    res.append((self.x + 1, self.y + 1))
+                if not bounds or self.y + 1 < sy and self.x - 1 >= 0:
+                    res.append((self.x - 1, self.y + 1))
+                if not bounds or self.y - 1 >= 0 and self.x + 1 < sx:
+                    res.append((self.x + 1, self.y - 1))
+                if not bounds or self.y - 1 >= 0 and self.x - 1 >= 0:
+                    res.append((self.x - 1, self.y - 1))
+            return res
+
         def neighbors(
             self,
             horizontal: bool = True,
             vertical: bool = True,
             diagonal: bool = False,
+            bounds: bool = True,
         ) -> List["Grid.GridItem[A]"]:
             """
             Get a list of valid neighbor coordinates
@@ -64,27 +103,27 @@ class Grid(Generic[A]):
             sx, sy = self.parent.size()
 
             if vertical:
-                if self.y - 1 >= 0:
+                if not bounds or self.y - 1 >= 0:
                     res.append(self.parent[self.x, self.y - 1])
 
             if horizontal:
-                if self.y < sy and self.x - 1 >= 0:
+                if not bounds or self.y < sy and self.x - 1 >= 0:
                     res.append(self.parent[self.x - 1, self.y])
-                if self.y < sy and self.x + 1 < sx:
+                if not bounds or self.y < sy and self.x + 1 < sx:
                     res.append(self.parent[self.x + 1, self.y])
 
             if vertical:
-                if self.y + 1 < sy and self.x < sx:
+                if not bounds or self.y + 1 < sy and self.x < sx:
                     res.append(self.parent[self.x, self.y + 1])
 
             if diagonal:
-                if self.y + 1 < sy and self.x + 1 < sx:
+                if not bounds or self.y + 1 < sy and self.x + 1 < sx:
                     res.append(self.parent[self.x + 1, self.y + 1])
-                if self.y + 1 < sy and self.x - 1 >= 0:
+                if not bounds or self.y + 1 < sy and self.x - 1 >= 0:
                     res.append(self.parent[self.x - 1, self.y + 1])
-                if self.y - 1 >= 0 and self.x + 1 < sx:
+                if not bounds or self.y - 1 >= 0 and self.x + 1 < sx:
                     res.append(self.parent[self.x + 1, self.y - 1])
-                if self.y - 1 >= 0 and self.x - 1 >= 0:
+                if not bounds or self.y - 1 >= 0 and self.x - 1 >= 0:
                     res.append(self.parent[self.x - 1, self.y - 1])
             return res
 
@@ -136,6 +175,7 @@ class Grid(Generic[A]):
             horizontal: bool = True,
             vertical: bool = True,
             diagonal: bool = False,
+            bounds: bool = True,
         ) -> List["Grid.GridItem[A]"]:
             """
             Get the neighboring items that match a given filter, based on the
@@ -150,10 +190,10 @@ class Grid(Generic[A]):
             ```
             """
             results = []
-            neighbors = self.neighbors(horizontal, vertical, diagonal)
+            neighbors = self.neighbors(horizontal, vertical, diagonal, bounds)
             _filter = _curry_filter(filter)
             for neighbor in neighbors:
-                if _filter(neighbor()):
+                if _filter(neighbor() if neighbor is not None else None):
                     results.append(neighbor)
             return results
 
@@ -192,6 +232,7 @@ class Grid(Generic[A]):
             horizontal: bool = True,
             vertical: bool = True,
             diagonal: bool = False,
+            bounds: bool = True,
         ) -> int:
             """
             Count the number of neighboring items that match a given filter,
@@ -206,10 +247,10 @@ class Grid(Generic[A]):
             ```
             """
             count = 0
-            neighbors = self.neighbors(horizontal, vertical, diagonal)
+            neighbors = self.neighbors(horizontal, vertical, diagonal, bounds)
             _filter = _curry_filter(filter)
             for neighbor in neighbors:
-                if _filter(neighbor()):
+                if _filter(neighbor() if neighbor is not None else None):
                     count += 1
             return count
 
@@ -321,9 +362,13 @@ class Grid(Generic[A]):
             item = self[check]
             if is_valid(item):
                 count += 1
-                valid.add(check)
+                valid.add(item)
                 neighbors = get_next(item)
-                n = [neighbor for neighbor in neighbors if neighbor not in visited]
+                n = [
+                    neighbor.position()
+                    for neighbor in neighbors
+                    if neighbor.position() not in visited
+                ]
                 to_visit.extend(n)
                 visited.update(n)
         return count, valid
