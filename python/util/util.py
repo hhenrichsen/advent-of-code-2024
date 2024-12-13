@@ -92,3 +92,22 @@ def compose_fns(fn_list: List[Callable]):
         return value
 
     return _anon
+
+
+def ints(s: str) -> List[int]:
+    import re
+
+    return list(map(int, re.findall(r"-?\d+", s)))
+
+
+def chunks(l: List[str]) -> List[List[str]]:
+    res = []
+    chunk = []
+    for line in l:
+        if line == "":
+            res.append(chunk)
+            chunk = []
+        else:
+            chunk.append(line)
+    res.append(chunk)
+    return res

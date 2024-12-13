@@ -1,31 +1,9 @@
-from functools import cache
 from typing import Tuple
-import sys
 
-sys.setrecursionlimit(10**6)
-
-
-@cache
-def tokens_rec(
-    a: Tuple[int, int],
-    a_cost: int,
-    b: Tuple[int, int],
-    b_cost: int,
-    prize: Tuple[int, int],
-):
-    if prize[0] < 0 or prize[1] < 0:
-        return float("inf")
-    if prize == (0, 0):
-        return 0
-    ta = (prize[0] - a[0], prize[1] - a[1])
-    tb = (prize[0] - b[0], prize[1] - b[1])
-    return min(
-        tokens_rec(a, a_cost, b, b_cost, ta) + a_cost,
-        tokens_rec(a, a_cost, b, b_cost, tb) + b_cost,
-    )
+from util import chunks, ints
 
 
-def tokens_linalg(
+def tokens(
     a: Tuple[int, int],
     a_cost: int,
     b: Tuple[int, int],
@@ -44,75 +22,27 @@ def tokens_linalg(
 
 def part1(inp: list[str]):
     result = 0
-    mode = 0
-    ax, ay = None, None
-    bx, by = None, None
-    px, py = None, None
     ca, cb = 3, 1
-    for line in inp:
-        if len(line) == 0:
-            t = tokens_linalg((ax, ay), ca, (bx, by), cb, (px, py))
-            result += t if t != float("inf") else 0
-            mode = 0
-            continue
-        if mode == 0:
-            _, n1r, n2r = line.split("+")
-            ax = int(n1r[: n1r.index(",")])
-            ay = int(n2r)
-            mode += 1
-            continue
-        if mode == 1:
-            _, n1r, n2r = line.split("+")
-            bx = int(n1r[: n1r.index(",")])
-            by = int(n2r)
-            mode += 1
-            continue
-        if mode == 2:
-            _, pxr, pyr = line.split("=")
-            px = int(pxr[: pxr.index(",")])
-            py = int(pyr)
-            mode += 1
-            continue
-
-    t = tokens_linalg((ax, ay), ca, (bx, by), cb, (px, py))
-    result += t if t != float("inf") else 0
+    for chunk in chunks(inp):
+        a, b, p = chunk
+        ax, ay = ints(a)
+        bx, by = ints(b)
+        px, py = ints(p)
+        t = tokens((ax, ay), ca, (bx, by), cb, (px, py))
+        result += t if t != float("inf") else 0
     return result
 
 
 def part2(inp):
     result = 0
-    mode = 0
-    ax, ay = None, None
-    bx, by = None, None
-    px, py = None, None
     ca, cb = 3, 1
-    for line in inp:
-        if len(line) == 0:
-            t = tokens_linalg((ax, ay), ca, (bx, by), cb, (px, py))
-            result += t if t != float("inf") else 0
-            mode = 0
-            continue
-        if mode == 0:
-            _, n1r, n2r = line.split("+")
-            ax = int(n1r[: n1r.index(",")])
-            ay = int(n2r)
-            mode += 1
-            continue
-        if mode == 1:
-            _, n1r, n2r = line.split("+")
-            bx = int(n1r[: n1r.index(",")])
-            by = int(n2r)
-            mode += 1
-            continue
-        if mode == 2:
-            _, pxr, pyr = line.split("=")
-            px = int(pxr[: pxr.index(",")]) + 10000000000000
-            py = int(pyr) + 10000000000000
-            mode += 1
-            continue
-
-    t = tokens_linalg((ax, ay), ca, (bx, by), cb, (px, py))
-    result += t if t != float("inf") else 0
+    for chunk in chunks(inp):
+        a, b, p = chunk
+        ax, ay = ints(a)
+        bx, by = ints(b)
+        px, py = list(map(lambda a: a + 10000000000000, ints(p)))
+        t = tokens((ax, ay), ca, (bx, by), cb, (px, py))
+        result += t if t != float("inf") else 0
     return result
 
 
