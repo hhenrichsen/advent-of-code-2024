@@ -3,9 +3,11 @@ import sys
 _, day = sys.argv
 
 try:
-    if open(f"./res/day{day}.txt", "r").read() != "" \
-        or open(f"./res/day{day}a.txt", "r").read() != "" \
-        or open(f"./python/day{day}.py", "r").read() != "":
+    if (
+        open(f"./res/day{day}.txt", "r").read() != ""
+        or open(f"./res/day{day}a.txt", "r").read() != ""
+        or open(f"./python/day{day}.py", "r").read() != ""
+    ):
         print(f"Day {day} already exists")
         exit(1)
 except FileNotFoundError:
@@ -31,6 +33,7 @@ from util import (
     RestRegion,
     UntilRegion,
     breadth_first_search,
+    chunks,
     compare_x,
     compare_y,
     compose_fns,
@@ -38,6 +41,7 @@ from util import (
     either,
     eq,
     intersect_strings,
+    ints,
     inv,
     is_in,
     ne,
