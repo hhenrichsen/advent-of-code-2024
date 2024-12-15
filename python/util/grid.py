@@ -1,4 +1,4 @@
-from typing import Callable, Generic, List, Set, Tuple, TypeVar, Union
+from typing import Callable, Generic, Iterable, List, Set, Tuple, TypeVar, Union
 
 
 A = TypeVar("A")
@@ -276,7 +276,7 @@ class Grid(Generic[A]):
             self, direction: Tuple[int, int], hit: Callable[["Grid.GridItem[A]"], bool]
         ) -> "Grid.GridItem[A]":
             x, y = self.x + direction[0], self.y + direction[1]
-            while (item := self.parent[x, y]) is not None:
+            while (item := self.parent[(x, y)]) is not None:
                 if hit(item):
                     return item
                 x += direction[0]
@@ -298,6 +298,21 @@ class Grid(Generic[A]):
             self.__data.append([])
             for x, item in enumerate(row):
                 self.__data[-1].append(Grid.GridItem(self, item, x, y))
+
+    @staticmethod
+    def parse(
+        raw: List[Iterable[A]],
+        item_parser: Callable[[A, int, int], B] = lambda c, x, y: c,
+    ) -> "Grid[B]":
+        """
+        Parses a list of lists into a grid using the given item parser.
+        """
+        data = []
+        for y, row in enumerate(raw):
+            data.append([])
+            for x, item in enumerate(row):
+                data[-1].append(item_parser(item, x, y))
+        return Grid(data)
 
     @staticmethod
     def read(
