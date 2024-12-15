@@ -21,8 +21,10 @@ with open(f"./res/day{day}a.txt", "w") as f:
 
 with open(f"./python/day{day}.py", "w") as f:
     f.write(
-        f"""
-from collections import Counter
+        f"""from collections import Counter, defaultdict, deque
+from functools import cache,
+from typing import List, Tuple
+from itertools import combinations, permutations
 
 from util import (
     AfterRegion,
