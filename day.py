@@ -57,45 +57,53 @@ from util import (
     windows,
 )
 
-grid = False
+is_grid = False
 
-            
-def part1(inp):
+
+def part1g(inp: Grid):
+    result = 0
+    return result
+
+def part1(inp: List[str]):
     result = 0
     for line in inp:
         ...
     return result
 
+def part2g(inp: Grid):
+    result = 0
+    return result
 
-def part2(inp):
+
+def part2(inp: List[str]):
     result = 0
     for line in inp:
         ...
     return result
 
-if not grid:
+print("TEST DAY {day}:")
+if not is_grid:
     test_inp = None
     with open("res/day{day}a.txt") as f:
         test_inp = list(map(lambda s: s.strip(), f.readlines()))
+    print(part1(test_inp))
+    print(part2(test_inp))
 else:
     test_inp = Grid.read("res/day{day}a.txt")
-
-
-print("TEST DAY {day}:")
-print(part1(test_inp))
-print(part2(test_inp))
+    print(part1g(test_inp))
+    print(part2g(test_inp))
 print()
 
-if not grid:
+print("FINAL DAY {day}:")
+if not is_grid:
     inp = None
     with open("res/day{day}.txt") as f:
         inp = list(map(lambda s: s.strip(), f.readlines()))
+    print(part1(inp))
+    print(part2(inp))
 else:
     inp = Grid.read("res/day{day}.txt")
-
-
-print("FINAL DAY {day}:")
-print(part1(inp))
-print(part2(inp))
-    """
+    print(part1g(inp))
+    print(part2g(inp))
+"""
     )
