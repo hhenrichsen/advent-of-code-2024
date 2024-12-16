@@ -40,6 +40,11 @@ class Grid(Generic[A]):
                 and self.y == other.y
             )
 
+        def __lt__(self, other):
+            return (self.x + (self.y * self.parent.size()[1])) < (
+                other.x + (other.y * other.parent.size()[1])
+            )
+
         def __hash__(self):
             return hash((self.data, self.x, self.y))
 
